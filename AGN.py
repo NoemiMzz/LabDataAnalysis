@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from astropy.table import Table
+from scipy.optimize import curve_fit
 from tqdm import tqdm
 
 ### DATA #######################################################################################################
@@ -43,6 +44,9 @@ N = len(OIII)
 def kauffmann(x):
     k = np.where(x<0, 0.61 / (x - 0.05) + 1.3, -np.inf)
     return k
+
+def line(x, a, b):
+    return a*x + b 
 
 
 #%%
@@ -122,7 +126,7 @@ plt.show()
 
 
 #%%
-### OTHER VARIABLES ############################################################################################
+### STAR FORMATION RATE ########################################################################################
 
 ### mass and star formation rate ###
 plt.figure()
@@ -148,7 +152,7 @@ log_mass_star = np.log10(mass_star)
 plt.figure()
 plt.scatter(log_mass_star, log_sSFR_star, s=2, alpha=0.2, color='royalblue', label="stellar ionization")
 plt.scatter(log_mass_AGN, log_sSFR_AGN, s=2, alpha=0.2, color='orange', label="AGN ionization")
-plt.axhline(-9.75, color='crimson', label="Main sequence of Star Forming Galaxies")
+plt.axhline(-9.73, color='crimson', label="Main sequence of Star Forming Galaxies")
 plt.xlim(7, 12)
 plt.ylim(-14, -8)
 plt.title("Specific star formation rate")
@@ -156,3 +160,78 @@ plt.xlabel("mass ($M_{\odot}$)")
 plt.ylabel("sSFR (1 / yrs)")
 plt.legend()
 plt.show()
+
+
+#%%
+### FIT ########################################################################################################
+
+log_sSFR = np.log10(SFR) - np.log10(mass)
+
+### dividing main sequence ###
+MS = np.array(np.where(log_sSFR>=-9.73)).T.flatten()   #selecting indices
+red = np.array(np.where(log_sSFR<-9.73)).T.flatten()
+
+mass_MS = []
+SFR_MS = []
+mass_red = []
+SFR_red = []
+for j in tqdm(MS):   #saving arrays for AGN ionization
+    mass_MS.append(mass[j])
+    SFR_MS.append(SFR[j])
+for k in tqdm(red):   #saving arrays for stellar ionization
+    mass_red.append(mass[k])
+    SFR_red.append(SFR[k])
+
+
+### mass and  specific star formation rate ###
+log_sSFR_MS = np.log10(SFR_MS) - np.log10(mass_MS)
+log_mass_MS = np.log10(mass_MS)
+log_sSFR_red = np.log10(SFR_red) - np.log10(mass_red)
+log_mass_red = np.log10(mass_red)
+
+plt.figure()
+plt.scatter(log_mass_red, log_sSFR_red, s=2, alpha=0.2, color='gainsboro', label="red passive galaxies")
+plt.scatter(log_mass_MS, log_sSFR_MS, s=2, alpha=0.2, color='mediumslateblue', label="main sequence")
+plt.axhline(-9.73, color='crimson', label="Main sequence of Star Forming Galaxies")
+plt.xlim(7, 12)
+plt.ylim(-14, -8)
+plt.title("Specific star formation rate")
+plt.xlabel("mass ($M_{\odot}$)")
+plt.ylabel("sSFR (1 / yrs)")
+plt.legend()
+plt.show()
+
+
+### fit the main sequence ###
+param, err = curve_fit(line, log_mass_MS, log_sSFR_MS)
+print("Fit: log(sSFR) = " + str(np.round(param[0], 2)) + " log(mass) + " + str(np.round(param[1], 2)))
+
+x_axis = np.linspace(7, 12, 1000)
+
+plt.figure()
+plt.scatter(log_mass_MS, log_sSFR_MS, s=2, alpha=0.2, color='mediumslateblue', label="main sequence")
+plt.plot(x_axis, line(x_axis, param[0], param[1]), color='gold', lw=2, label=("Fit: log(sSFR) = " + str(np.round(param[0], 2)) + " log(mass) + " + str(np.round(param[1], 2))))
+plt.xlim(7, 12)
+plt.ylim(-12, -6)
+plt.title("Specific star formation rate")
+plt.xlabel("mass ($M_{\odot}$)")
+plt.ylabel("sSFR (1 / yrs)")
+plt.legend()
+plt.show()
+
+
+### main sequence binning ###
+#indexes associated with the mass intervals
+n_bins = 25
+bin_margins = np.linspace(min(log_mass_MS), max(log_mass_MS), n_bins+1)
+bins = []
+for b in range(n_bins):
+    bins.append((log_mass_MS >= bin_margins[b]) & (log_mass_MS < bin_margins[b+1]))
+plt.hist(log_mass_MS, bins=bins)
+    
+
+
+
+
+
+
