@@ -43,7 +43,7 @@ R = 0.1
 f_b= 0.15
 M_h_min = 1.e9
 M_h_max = 10.0**11.6
-M_h_form = 5.e8 #dm halo mass at t_form
+#M_h_form = 5.e8 #dm halo mass at t_form
 
 
 #%%
@@ -286,16 +286,25 @@ plt.show()
 t = np.arange(dt,13.0,dt) #Gyr
 z = t*0.
 t_dyn = t*0.
-for i in range(len(t)):
+for i in tqdm(range(len(t))):
     z[i] = z_at_value(Planck13.age, t[i] * u.Gyr)
     t_dyn[i] = 2.e7*(1+z[i])**(-0.75) #yr
 
-t_form = np.linspace(0.1, 1, 1000)
+t_form = np.linspace(0.1, 1, 100)
+M_h_form = np.array([1.e7, 5.e7, 1.e8, 5.e8, 1.e9, 5.e9]) #DM halo mass at t_form
 
 Y = []
-for j in tqdm(range(len(t_form))):
-    Y.append( evolve_galaxy(t_form[j], 13, M_h_form) )
+print("\n")
+for k in range(len(M_h_form)):
+    for j in tqdm(range(len(t_form))):
+        Y.append( evolve_galaxy(t_form[j], 13, M_h_form[k]) )
 Y = np.array(Y)
+
+#Y = []
+#print("\n")
+#for j in tqdm(range(len(t_form))):
+#    Y.append( evolve_galaxy(t_form[j], 13, M_h_form) )
+#Y = np.array(Y)
 
 #%%
 
