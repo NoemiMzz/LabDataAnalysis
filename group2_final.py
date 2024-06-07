@@ -159,7 +159,7 @@ for i in tqdm(range(len(t))):
     t_dyn[i] = 2.e7*(1+z[i])**(-0.75) #yr
 
 #ranges in the functions parameters
-t_form = np.concatenate((np.linspace(0.2, 0.3, 2000), np.linspace(0.3, 1, 500)))
+t_form = np.linspace(0.1, 1, 2500)
 M_h_form = np.logspace(7, 8.7, 6) #DM halo mass at t_form
 
 Y = []
@@ -184,7 +184,7 @@ plt.scatter(log_mass_open, log_sSFR_open, color='navy', s=2, alpha=1)
 plt.axhline(T, color='crimson', label="Main sequence of Star Forming Galaxies")
 plt.xlim(7, 12)
 plt.ylim(-14, -8)
-plt.title("Open box model")
+plt.title("Opened box model")
 plt.xlabel("mass ($M_{\odot}$)")
 plt.ylabel("sSFR (1 / yrs)")
 plt.legend()
@@ -258,7 +258,7 @@ plt.scatter(log_mass_open[MS_open], log_sSFR_open[MS_open], s=2, alpha=alpha, co
 plt.plot(x_axis, line(x_axis, param_o[0], param_o[1]), color='coral', lw=2, label=("Fit: log(sSFR) = " + str(np.round(param_o[0], 2)) + " log(mass) + " + str(np.round(param_o[1], 2))))
 plt.xlim(7, 12)
 plt.ylim(-12, -6)
-plt.title("Main sequence - open box")
+plt.title("Main sequence - opened box")
 plt.xlabel("mass ($M_{\odot}$)")
 plt.ylabel("sSFR (1 / yrs)")
 plt.legend()
@@ -268,7 +268,7 @@ plt.show()
 ### plot fits comparison ###
 plt.figure()
 plt.plot(x_axis, line(x_axis, param_m[0], param_m[1]), color='orange', lw=2, label=("Closed box model"))
-plt.plot(x_axis, line(x_axis, param_o[0], param_o[1]), color='coral', lw=2, label=("Open box model"))
+plt.plot(x_axis, line(x_axis, param_o[0], param_o[1]), color='coral', lw=2, label=("Opened box model"))
 plt.plot(x_axis, line(x_axis, param_d[0], param_d[1]), color='gold', lw=2, label=("CIGALE data"))
 plt.title("Main sequence - comparison")
 plt.xlabel("mass ($M_{\odot}$)")
@@ -358,7 +358,7 @@ plt.figure()
 plt.scatter(log_mass_open, log_sSFR_open, color='navy', s=0.7, alpha=alpha)   #sSFR
 plt.xlim(7, 12)
 plt.ylim(-14, -8)
-plt.title("Binning - open box")
+plt.title("Binning - opened box")
 plt.xlabel("mass ($M_{\odot}$)")
 plt.ylabel("sSFR (1 / yrs)")
 plt.axhline(T, color='red')
@@ -380,7 +380,7 @@ plt.figure()
 plt.axvline(T, color='red')
 plt.hist(log_sSFR_open[bin1], bins=15, density=True, color='royalblue', label="$10^{8} < m <10^{8.75}$", alpha=0.5)
 plt.hist(log_sSFR_open[bin4], bins=15, density=True, color='crimson', label="$10^{10.25} < m <10^{11}$", alpha=0.5)
-plt.title("Bimodal plot - open box")
+plt.title("Bimodal plot - opened box")
 plt.xlabel("$log_{10}(~sSFR (1 / yrs)~)$")
 plt.ylabel("#galaxies")
 plt.legend()
